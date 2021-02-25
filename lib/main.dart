@@ -27,6 +27,35 @@ class ListaDeTransferencia extends StatelessWidget {
         ]));
   }
 }
+/**
+ * Método para a criação de campos de formulpario
+ */
+class	CampoFormulario	extends	StatelessWidget	{
+  	TextEditingController	_controlador;
+  	String	_rotulo;
+  	String	_dica;
+   IconData icone;
+   TextInputType teclado;
+  CampoFormulario(this._controlador,	this._rotulo,	this._dica, this.icone, this.teclado);
+  @override
+  Widget	build(BuildContext	context)	{
+    return	Padding(
+      padding:	const	EdgeInsets.all(16.0),
+      child:	TextField(
+        controller:	_controlador,
+        style:	TextStyle(
+          fontSize:	24.0,
+        ),
+        decoration:	InputDecoration(
+          labelText:	_rotulo,
+          hintText:	_dica,
+          icon: icone != null ? Icon(icone): null,
+        ),
+        keyboardType:	teclado != null ? teclado : TextInputType.number,
+      ),
+    );
+  }
+}
 
 class Transferencia {
   final double valor;
@@ -55,62 +84,52 @@ class ItemTransferencia extends StatelessWidget {
 }
 
 class FormularioTransferencia extends StatelessWidget {
-  final	TextEditingController	_controladorCampoNumeroConta	=	TextEditingController();
-  final	TextEditingController	_controladorCampoValor	=	TextEditingController();
+  final	TextEditingController	controladorCampoNumeroConta	=	TextEditingController();
+  final	TextEditingController	controladorCampoValor	=	TextEditingController();
 
   @override
-  Widget	build(BuildContext	context)	{
-    return	Scaffold(
-      appBar:	AppBar(
-        title:	Text('Criando	Transferência'),
-      ),
-      body:	Column(
-        children:	<Widget>[
-          Padding(padding: EdgeInsets.all(12.0),
-            child:TextField(
-              controller: _controladorCampoNumeroConta,
-              style:TextStyle(fontSize: 24.0),
-              decoration: InputDecoration(
-                labelText: "Número da Conta",
-                hintText: "0000",
+  Widget	build(BuildContext	context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Criando	Transferência'),
+        ),
+        body: Column(
+            children: <Widget>[
+              CampoFormulario(
+                controladorCampoNumeroConta,
+                "Número da Conta",
+                "0000",
+                null,
+                null,
               ),
-              keyboardType: TextInputType.number,
-            ),
-          ),
-          Padding(padding: EdgeInsets.all(12.0),
-            child:TextField(
-              controller:_controladorCampoValor,
-              style:TextStyle(fontSize: 24.0),
-              decoration: InputDecoration(
-               icon: Icon(Icons.monetization_on),
-                labelText: "Valor",
-                hintText: "0.00",
-              ),
-              keyboardType: TextInputType.numberWithOptions(signed:false,
-                  decimal: true
+              CampoFormulario(
+                controladorCampoValor,
+                "valor da Transferência",
+                "0000",
+                Icons.monetization_on,
+                null,
               ),
 
-            ),
-          ),
-          Builder(builder: (ctx)=>RaisedButton(
-              child:Text("Confirmar"),
-              onPressed: () {
-                final	int	numeroConta	=	int.tryParse(_controladorCampoNumeroConta.text);
-                final	double	valor	=	double.tryParse(_controladorCampoValor.text);
-                if(numeroConta	!=	null	&&	valor	!=	null){
-                  final	transferenciaCriada	=	Transferencia(valor,	numeroConta);
-                  debugPrint('$transferenciaCriada');
-                  Scaffold.of(ctx).showSnackBar(
-                      SnackBar(
-                        content: Text('$transferenciaCriada'),
-                      ));
-                  //tentar implementar com SnackBar
-                }
-              },
-            ), //RaisedButton
-          )
-        ],
-      ),
+              Builder(builder: (ctx) =>
+                  RaisedButton(
+                      child: Text("Enviar a transferência"),
+                      onPressed: () =>_criarTransferencia(ctx),
+                  )
+                  )
+            ]
+        )
     );
+  }
+  void	_criarTransferencia(context)	{
+    final	int	numeroConta	=	int.tryParse(controladorCampoNumeroConta.text);
+    final	double	valor	=	double.tryParse(controladorCampoValor.text);
+    if(numeroConta	!=	null	&&	valor	!=	null)	{
+      final	transferenciaCriada	=	Transferencia(valor,	numeroConta);
+      debugPrint('$transferenciaCriada');
+      Scaffold.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$transferenciaCriada'),
+          ));
+    }
   }
 }
